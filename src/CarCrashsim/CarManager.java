@@ -9,8 +9,10 @@ public class CarManager {
         carList = new ArrayList<Car>();
     }
 
-    public void addCar(Car car) {
-        carList.add(car);
+    public void addCars(ArrayList<Car> cars) {
+        for (Car car : cars) {
+            carList.add(car);
+        }
     }
 
     public void moveAllCars(double dt) {

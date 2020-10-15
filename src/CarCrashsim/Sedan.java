@@ -7,8 +7,7 @@ public class Sedan implements Car{
     private GraphicsGroup group;
     private double dx;
     private double dy;
-    private double x;
-    private double y;
+    private Path carShape;
 
     private static final double MASS = 25;
     private static final double LENGTH = 90;
@@ -17,18 +16,8 @@ public class Sedan implements Car{
     public Sedan(double dx, double dy, double x, double y) {
         this.dx = dx;
         this.dy = dy;
-        this.x = x;
-        this.y = y;
         group = new GraphicsGroup();
         buildGraphics();
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
     }
 
     public double getDx() {
@@ -43,12 +32,20 @@ public class Sedan implements Car{
         return MASS;
     }
 
-    public boolean checkForCollision() {
-        return false;
+    public boolean checkPointForCollision(Point point) {
+        return carShape.testHit(point.getX() - group.getX(), point.getY() - group.getY());
+    }
+
+    public ArrayList<Point> getPoints() {
+        ArrayList<Point> points = getCarShapePoints();
+        for (Point point : points) {
+           point.add(group.getPosition());
+        }
+        return points;
     }
 
     public void move(double dt) {
-        group.setPosition(group.getX() + dt * dx, group.getY() + dt * dy);
+        group.moveBy(dt * dx, dt * dy);
     }
 
     public GraphicsGroup getGraphics() {
@@ -56,7 +53,7 @@ public class Sedan implements Car{
     }
 
     public void buildGraphics() {
-        Path carShape = new Path(getCarShapePoints());
+        carShape = new Path(getCarShapePoints());
         Path windShield = new Path(getWindPoints());
         Path rMirror = new Path(getRMirrorPoints());
         Path lMirror = new Path(getLMirrorPoints());
@@ -68,37 +65,37 @@ public class Sedan implements Car{
 
     private ArrayList<Point> getWindPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        points.add(new Point(getX() + 9, getY() + 4));
-        points.add(new Point(getX() + 9, getY() + 41));
-        points.add(new Point(getX() + 25, getY() + 41));
-        points.add(new Point(getX() + 25, getY() + 4));
+        points.add(new Point(9, 4));
+        points.add(new Point(9, 41));
+        points.add(new Point(25, 41));
+        points.add(new Point(25, 4));
         return points;
     }
 
         private ArrayList<Point> getRMirrorPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        points.add(new Point(getX() + 16, getY()));
-        points.add(new Point(getX() + 20, getY()));
-        points.add(new Point(getX() + 23, getY() - 8));
-        points.add(new Point(getX() + 19, getY() - 8));
+        points.add(new Point(16, 0));
+        points.add(new Point(20, 0));
+        points.add(new Point(23, 0 - 8));
+        points.add(new Point(19, 0 - 8));
         return points;
     }
 
         private ArrayList<Point> getLMirrorPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        points.add(new Point(getX() + 16, getY() + 45));
-        points.add(new Point(getX() + 20, getY() + 45));
-        points.add(new Point(getX() + 23, getY() + 53));
-        points.add(new Point(getX() + 19, getY() + 53));
+        points.add(new Point(16, 45));
+        points.add(new Point(20, 45));
+        points.add(new Point(23, 53));
+        points.add(new Point(19, 53));
         return points;
     }
 
         private ArrayList<Point> getCarShapePoints() {
         ArrayList<Point> points = new ArrayList<>();
-        points.add(new Point(getX(), getY()));
-        points.add(new Point(getX(), getY() + WIDTH));
-        points.add(new Point(getX() + LENGTH, getY() + WIDTH));
-        points.add(new Point(getX() + LENGTH, getY()));
+        points.add(new Point(0, 0));
+        points.add(new Point(0, WIDTH));
+        points.add(new Point(LENGTH, WIDTH));
+        points.add(new Point(LENGTH, 0));
         return points;
     }
 }

@@ -1,5 +1,7 @@
 package CarCrashsim;
 
+import java.util.ArrayList;
+
 import edu.macalester.graphics.CanvasWindow;
 
 public class CarCrashSim {
@@ -17,20 +19,24 @@ public class CarCrashSim {
         collisionM =  new CollisionManager();
 
         SmartCar testCar = new SmartCar(10, 0, 100, 400);
-        SmartCar testCar2 = new SmartCar(10, 50, 100, 100);
-        Sedan testSedan = new Sedan(-20, 0, 700, 700);
-        Truck testTruck = new Truck(-10, -10, 700, 500);
-        carM.addCar(testCar);
-        carM.addCar(testCar2);
-        carM.addCar(testSedan);
-        carM.addCar(testTruck);
+        SmartCar testCar2 = new SmartCar(-10, 0, 700, 410);
+        // Sedan testSedan = new Sedan(-20, 0, 700, 700);
+        // Truck testTruck = new Truck(-10, -10, 700, 500);
+        ArrayList<Car> carList = new ArrayList<>();
+        carList.add(testCar);
+        carList.add(testCar2);
+        
+        collisionM.addCars(carList);
+        carM.addCars(carList);
+
         canvas.add(testCar.getGraphics());
         canvas.add(testCar2.getGraphics());
-        canvas.add(testSedan.getGraphics());
-        canvas.add(testTruck.getGraphics());
+        // canvas.add(testSedan.getGraphics());
+        // canvas.add(testTruck.getGraphics());
 
         canvas.animate(() -> {
             carM.moveAllCars(TIME_INCERMENT);
+            collisionM.checkForCollisions();
             return;
         });
     }

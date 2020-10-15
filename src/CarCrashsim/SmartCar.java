@@ -9,8 +9,7 @@ public class SmartCar implements Car{
     private GraphicsGroup group;
     private double dx;
     private double dy;
-    private double x;
-    private double y;
+    private Path carShape;
 
     private static final double MASS = 10;
     private static final double LENGTH = 50;
@@ -19,19 +18,18 @@ public class SmartCar implements Car{
     public SmartCar(double dx, double dy, double x, double y) {
         this.dx = dx;
         this.dy = dy;
-        this.x = x;
-        this.y = y;
         group = new GraphicsGroup();
         buildGraphics();
+        group.setPosition(x, y);
     }
 
-    public double getX() {
-        return x;
-    }
+    // public double getX() {
+    //     return x;
+    // }
 
-    public double getY() {
-        return y;
-    }
+    // public double getY() {
+    //     return y;
+    // }
 
     public double getDx() {
         return dx;
@@ -45,12 +43,21 @@ public class SmartCar implements Car{
         return MASS;
     }
 
-    public boolean checkForCollision() {
-        return false;
+    public boolean checkPointForCollision(Point point) {
+        return carShape.testHit(point.getX() - group.getX(), point.getY() - group.getY());
+    }
+
+    public ArrayList<Point> getPoints() {
+        ArrayList<Point> points = getCarShapePoints();
+        ArrayList<Point> collidePoints = new ArrayList<>();
+        for (Point point : points) {
+            collidePoints.add(point.add(group.getPosition()));
+        }
+        return collidePoints;
     }
 
     public void move(double dt) {
-        group.setPosition(group.getX() + dt * dx, group.getY() + dt * dy);
+        group.moveBy(dt * dx, dt * dy);
     }
 
     public GraphicsGroup getGraphics() {
@@ -58,10 +65,10 @@ public class SmartCar implements Car{
     }
 
     public void buildGraphics() {
-        Path carShape = new Path(getCarShapePoints());
-        Path windShield = new Path(getWindPoints());
-        Path rMirror = new Path(getRMirrorPoints());
-        Path lMirror = new Path(getLMirrorPoints());
+        carShape = new Path(getCarShapePoints(), true);
+        Path windShield = new Path(getWindPoints(), true);
+        Path rMirror = new Path(getRMirrorPoints(), true);
+        Path lMirror = new Path(getLMirrorPoints(), true);
         group.add(rMirror);
         group.add(lMirror);
         group.add(carShape);
@@ -70,37 +77,37 @@ public class SmartCar implements Car{
 
     private ArrayList<Point> getWindPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        points.add(new Point(getX() + 7, getY() + 3));
-        points.add(new Point(getX() + 7, getY() + 37));
-        points.add(new Point(getX() + 22, getY() + 37));
-        points.add(new Point(getX() + 22, getY() + 3));
+        points.add(new Point(7, 3));
+        points.add(new Point(7, 37));
+        points.add(new Point(22, 37));
+        points.add(new Point(22, 3));
         return points;
     }
 
         private ArrayList<Point> getRMirrorPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        points.add(new Point(getX() + 14, getY()));
-        points.add(new Point(getX() + 18, getY()));
-        points.add(new Point(getX() + 21, getY() - 8));
-        points.add(new Point(getX() + 17, getY() - 8));
+        points.add(new Point(14, 0));
+        points.add(new Point(18, 0));
+        points.add(new Point(21, -8));
+        points.add(new Point(17, -8));
         return points;
     }
 
         private ArrayList<Point> getLMirrorPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        points.add(new Point(getX() + 14, getY() + 40));
-        points.add(new Point(getX() + 18, getY() + 40));
-        points.add(new Point(getX() + 21, getY() + 48));
-        points.add(new Point(getX() + 17, getY() + 48));
+        points.add(new Point(14, 40));
+        points.add(new Point(18, 40));
+        points.add(new Point(21, 48));
+        points.add(new Point(17, 48));
         return points;
     }
 
         private ArrayList<Point> getCarShapePoints() {
         ArrayList<Point> points = new ArrayList<>();
-        points.add(new Point(getX(), getY()));
-        points.add(new Point(getX(), getY() + WIDTH));
-        points.add(new Point(getX() + LENGTH, getY() + WIDTH));
-        points.add(new Point(getX() + LENGTH, getY()));
+        points.add(new Point(0, 0));
+        points.add(new Point(0, WIDTH));
+        points.add(new Point(LENGTH, WIDTH));
+        points.add(new Point(LENGTH, 0));
         return points;
     }
 }
