@@ -23,13 +23,17 @@ public class SmartCar implements Car{
         group.setPosition(x, y);
     }
 
-    // public double getX() {
-    //     return x;
-    // }
+    public double getMassOfInertia() {
+        return 4.0/3.0 * WIDTH * LENGTH * (WIDTH*WIDTH + LENGTH*LENGTH) * (MASS / LENGTH * WIDTH);
+    }
 
-    // public double getY() {
-    //     return y;
-    // }
+    public void setDx(double dx) {
+        this.dx = dx;
+    }
+
+    public void setDy(double dy) {
+        this.dy = dy;
+    }
 
     public double getDx() {
         return dx;
@@ -41,6 +45,14 @@ public class SmartCar implements Car{
 
     public double getMass() {
         return MASS;
+    }
+
+    public double getX() {
+        return group.getX();
+    }
+
+    public double getY() {
+        return group.getY();
     }
 
     public boolean checkPointForCollision(Point point) {

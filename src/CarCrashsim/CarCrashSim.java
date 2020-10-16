@@ -18,21 +18,23 @@ public class CarCrashSim {
         carM = new CarManager();
         collisionM =  new CollisionManager();
 
-        SmartCar testCar = new SmartCar(10, 0, 100, 400);
-        SmartCar testCar2 = new SmartCar(-10, 0, 700, 410);
-        // Sedan testSedan = new Sedan(-20, 0, 700, 700);
-        // Truck testTruck = new Truck(-10, -10, 700, 500);
+        //SmartCar testCar = new SmartCar(10, 0, 100, 400);
+        //SmartCar testCar2 = new SmartCar(-60, -20, 700, 600);
+        Sedan testSedan = new Sedan(20, 0, 100, 400);
+        Truck testTruck = new Truck(0, -20, 400, 700);
         ArrayList<Car> carList = new ArrayList<>();
-        carList.add(testCar);
-        carList.add(testCar2);
+        //carList.add(testCar);
+        // carList.add(testCar2);
+        carList.add(testSedan);
+        carList.add(testTruck);
         
         collisionM.addCars(carList);
         carM.addCars(carList);
 
-        canvas.add(testCar.getGraphics());
-        canvas.add(testCar2.getGraphics());
-        // canvas.add(testSedan.getGraphics());
-        // canvas.add(testTruck.getGraphics());
+        //canvas.add(testCar.getGraphics());
+        // canvas.add(testCar2.getGraphics());
+        canvas.add(testSedan.getGraphics());
+        canvas.add(testTruck.getGraphics());
 
         canvas.animate(() -> {
             carM.moveAllCars(TIME_INCERMENT);

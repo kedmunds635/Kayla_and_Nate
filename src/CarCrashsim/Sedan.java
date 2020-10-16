@@ -18,6 +18,27 @@ public class Sedan implements Car{
         this.dy = dy;
         group = new GraphicsGroup();
         buildGraphics();
+        group.setPosition(x, y);
+    }
+
+    public double getMassOfInertia() {
+        return 4.0/3.0 * WIDTH * LENGTH * (WIDTH*WIDTH + LENGTH*LENGTH) * (MASS / LENGTH * WIDTH);
+    }
+
+    public void setDx(double dx) {
+        this.dx = dx;
+    }
+
+    public void setDy(double dy) {
+        this.dy = dy;
+    }
+
+    public double getX() {
+        return group.getX();
+    }
+
+    public double getY() {
+        return group.getY();
     }
 
     public double getDx() {
@@ -38,10 +59,11 @@ public class Sedan implements Car{
 
     public ArrayList<Point> getPoints() {
         ArrayList<Point> points = getCarShapePoints();
+        ArrayList<Point> collidePoints = new ArrayList<>();
         for (Point point : points) {
-           point.add(group.getPosition());
+            collidePoints.add(point.add(group.getPosition()));
         }
-        return points;
+        return collidePoints;
     }
 
     public void move(double dt) {
