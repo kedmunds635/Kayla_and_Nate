@@ -6,6 +6,15 @@ import edu.macalester.graphics.GraphicsGroup;
 import edu.macalester.graphics.Point;
 
 public interface Car {
+    public void spin(double rad);
+
+    public double rVelToRadians();
+
+    public void setRVelocity(Vector vel);
+
+    public Vector getR(Point collide);
+
+    public Vector getRVel();
 
     public double getMassOfInertia();
 

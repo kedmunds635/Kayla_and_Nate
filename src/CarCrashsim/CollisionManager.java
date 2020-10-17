@@ -2,8 +2,6 @@ package CarCrashsim;
 
 import java.util.ArrayList;
 
-import javax.xml.xpath.XPath;
-
 import edu.macalester.graphics.Point;
 
 public class CollisionManager {
@@ -27,7 +25,7 @@ public class CollisionManager {
                     for (Point point : points) {
                         if (car.checkPointForCollision(point)) {
                             System.out.print("collision");
-                            handleCollision(car, car2);
+                            handleCollision(car, car2, point);
                         }
                     }
                 }
@@ -35,7 +33,9 @@ public class CollisionManager {
         }
     }
 
-    private void handleCollision(Car car, Car car2) {
+    private void handleCollision(Car car, Car car2, Point coll) {
+        calculateRotationalV(car, car2, coll);
+
         double finalDx = calculateFinalDx(car, car2);
 
         car.setDx(finalDx);
@@ -61,17 +61,37 @@ public class CollisionManager {
         return finalYMomentum / (car.getMass() + car2.getMass());
     }
 
-    private void calculateRotationalV(Car car, Car car2) {
+    private void calculateRotationalV(Car car, Car car2, Point coll) {
         Vector carVel = new Vector(car.getDx(), car.getDy());
         Vector car2Vel = new Vector(car2.getDx(), car2.getDy());
+        Vector n = getNormal(car, car2);
+
+        Vector vp = (carVel.add(cross(car.getRVel(), car.getR(coll)))) //look at this
+            .subtract(car2Vel.add(cross(car2.getRVel(), car2.getR(coll))));
+
+        double vp_p = vp.dot(n);
+
         Vector rVel = carVel.subtract(car2Vel);
         if (!carsApproching(rVel, car, car2)) {
             return;
         }
 
-        double al = 1 / car.getMass() + Math.pow(cross(carVel, rVel), 2) + car.getMassOfInertia() +
-            1 / car2.getMass() + Math.pow(cross(car2Vel, rVel), 2) + car2.getMassOfInertia();
-        Vector j = rVel.multiply(-1.0).divide(al);
+        double al = 1 / car.getMass() + Math.pow(cross(car.getR(coll), n), 2) + car.getMassOfInertia() +
+            1 / car2.getMass() + Math.pow(cross(car2.getR(coll), n), 2) + car2.getMassOfInertia();
+        double j = vp_p * -1 / (al);
+        Vector jn = n.multiply(j);
+
+        System.out.println(car.getRVel().add(cross(car.getR(coll), jn) /car.getMassOfInertia()));
+        System.out.println(car2.getRVel().add(cross(car2.getR(coll), jn) /car2.getMassOfInertia()));
+        car.setRVelocity(car.getRVel().add(cross(car.getR(coll), jn) /car.getMassOfInertia()));
+        car2.setRVelocity(car2.getRVel().add(cross(car2.getR(coll), jn) /car2.getMassOfInertia()));
+    }
+
+    private Vector getNormal(Car car, Car car2) {
+        double xDist = car.getX() - car2.getX();
+        double yDist = car.getY() - car2.getY();
+        Vector n = new Vector(xDist, yDist);
+        return n.divide(n.getVelocity());
     }
 
     private double cross(Vector v1, Vector v2) {

@@ -8,10 +8,13 @@ public class Sedan implements Car{
     private double dx;
     private double dy;
     private Path carShape;
+    private Vector rVel;
+    private Point centerOfMass;
+    private double orientation;
 
     private static final double MASS = 25;
     private static final double LENGTH = 90;
-    private static final double WIDTH = 45;
+    private static final double HEIGHT = 45;
 
     public Sedan(double dx, double dy, double x, double y) {
         this.dx = dx;
@@ -19,10 +22,12 @@ public class Sedan implements Car{
         group = new GraphicsGroup();
         buildGraphics();
         group.setPosition(x, y);
+        centerOfMass = new Point(x + LENGTH * 0.5, y + HEIGHT * 0.5);
+        rVel = new Vector(0, 0);
     }
 
     public double getMassOfInertia() {
-        return 4.0/3.0 * WIDTH * LENGTH * (WIDTH*WIDTH + LENGTH*LENGTH) * (MASS / LENGTH * WIDTH);
+        return 4.0/3.0 * HEIGHT * LENGTH * (HEIGHT*HEIGHT + LENGTH*LENGTH) * (MASS / LENGTH * HEIGHT);
     }
 
     public void setDx(double dx) {
@@ -51,6 +56,31 @@ public class Sedan implements Car{
 
     public double getMass() {
         return MASS;
+    }
+
+    public Vector getR(Point collide) {
+        return new Vector(collide.getX() - centerOfMass.getX(), collide.getY() - centerOfMass.getY());
+    }
+
+    public Vector getRVel() {
+        return rVel;
+    }
+
+    public void setRVelocity(Vector vel) {
+        rVel = vel;
+    }
+
+    public double rVelToRadians() {
+        double dist = Math.sqrt(Math.pow(LENGTH * 0.5, 2) + Math.pow(HEIGHT * 0.5, 2));
+        double circumfence = 2 * Math.PI * dist;
+        return (circumfence / rVel.getVelocity()) * 2 * Math.PI;
+    }
+
+    public void spin(double rads) {
+        ArrayList<Point> points = getCarShapePoints();
+        for (Point point : points) {
+            point.rotate(rads + orientation, centerOfMass);
+        }
     }
 
     public boolean checkPointForCollision(Point point) {
@@ -115,8 +145,8 @@ public class Sedan implements Car{
         private ArrayList<Point> getCarShapePoints() {
         ArrayList<Point> points = new ArrayList<>();
         points.add(new Point(0, 0));
-        points.add(new Point(0, WIDTH));
-        points.add(new Point(LENGTH, WIDTH));
+        points.add(new Point(0, HEIGHT));
+        points.add(new Point(LENGTH, HEIGHT));
         points.add(new Point(LENGTH, 0));
         return points;
     }

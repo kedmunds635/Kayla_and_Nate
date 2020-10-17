@@ -25,6 +25,14 @@ public class Vector {
         return Math.atan(dx/dy);
     }
 
+    public Vector addVector(Vector other) {
+        return new Vector(this.dx + other.getDx(), this.dy + other.getDy());
+    }
+
+    public Vector add(double num) {
+        return new Vector(this.getDx() + num, this.getDy() + num);
+    }
+
     public Vector subtract(Vector other) {
         return new Vector(this.dx - other.getDx(), this.dy - other.getDy());
     }
@@ -37,5 +45,16 @@ public class Vector {
         return new Vector(this.dx / num, this.dy / num);
     }
 
+    public Vector multiplyVector (Vector other) {
+        return new Vector(this.dx * other.getDx(), this.dy * other.getDy());
+    }
+
+    public String toString() {
+        return "(" + dx + ", " + dy + ")";
+    }
+
+    public double dot(Vector other) {
+        return (this.dx * other.getDx() + this.dy * other.getDy());
+    }
     
 }
