@@ -13,10 +13,15 @@ public class SmartCar implements Car{
     private Vector rVel;
     private Point centerOfMass;
     private double orientation;
+    private Path lMirror;
+    private Path rMirror;
+    private Path windShield;
 
-    private static final double MASS = 10;
+    private static final double MASS = 9000;
     private static final double LENGTH = 50;
     private static final double HEIGHT = 40;
+    private static final double LENGTH_METERS = LENGTH / 15;
+    private static final double HEIGHT_METERS = HEIGHT / 15;
 
     public SmartCar(double dx, double dy, double x, double y) {
         this.dx = dx;
@@ -30,7 +35,7 @@ public class SmartCar implements Car{
     }
 
     public double getMassOfInertia() {
-        return 4.0/3.0 * HEIGHT * LENGTH * (HEIGHT*HEIGHT + LENGTH*LENGTH) * (MASS / LENGTH * HEIGHT);
+        return 4.0/3.0 * HEIGHT_METERS * LENGTH_METERS * (HEIGHT_METERS*HEIGHT_METERS + LENGTH_METERS*LENGTH_METERS) * (MASS / LENGTH_METERS * HEIGHT_METERS);
     }
 
     public void setDx(double dx) {
@@ -80,14 +85,20 @@ public class SmartCar implements Car{
         return (rVel.getVelocity() / circumfence) * 2 * Math.PI;
     }
 
-    public void spin(double rads) {
-        ArrayList<Point> points = getCarShapePoints();
+    public void spinAllParts(double rads) {
+        spin(rads, getCarShapePoints(), carShape);
+        spin(rads, getLMirrorPoints(), lMirror);
+        spin(rads, getRMirrorPoints(), rMirror);
+        spin(rads, getWindPoints(), windShield);
+    }
+
+    public void spin(double rads, ArrayList<Point> points, Path shape) {
         ArrayList<Point> rotatedPoints = new ArrayList<>();
         for (Point point : points) {
             rotatedPoints.add(point.rotate(rads + orientation, centerOfMass));
         }
         orientation += rads;
-        carShape.setVertices(rotatedPoints);
+        shape.setVertices(rotatedPoints);
     }
 
     public boolean checkPointForCollision(Point point) {
@@ -113,9 +124,9 @@ public class SmartCar implements Car{
 
     public void buildGraphics() {
         carShape = new Path(getCarShapePoints(), true);
-        Path windShield = new Path(getWindPoints(), true);
-        Path rMirror = new Path(getRMirrorPoints(), true);
-        Path lMirror = new Path(getLMirrorPoints(), true);
+        windShield = new Path(getWindPoints(), true);
+        rMirror = new Path(getRMirrorPoints(), true);
+        lMirror = new Path(getLMirrorPoints(), true);
         group.add(rMirror);
         group.add(lMirror);
         group.add(carShape);

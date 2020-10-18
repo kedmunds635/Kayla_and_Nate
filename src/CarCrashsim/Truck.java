@@ -11,10 +11,16 @@ public class Truck implements Car{
     private Vector rVel;
     private Point centerOfMass;
     private double orientation;
+    private Path lMirror;
+    private Path rMirror;
+    private Path windShield;
+    private Path bed;
 
-    private static final double MASS = 40;
+    private static final double MASS = 36000;
     private static final double LENGTH = 90;
     private static final double HEIGHT = 45;
+    private static final double LENGTH_METERS = LENGTH / 15;
+    private static final double HEIGHT_METERS = HEIGHT / 15;
 
     public Truck(double dx, double dy, double x, double y) {
         this.dx = dx;
@@ -36,7 +42,7 @@ public class Truck implements Car{
     }
 
     public double getMassOfInertia() {
-        return 4.0/3.0 * HEIGHT * LENGTH * (HEIGHT*HEIGHT + LENGTH*LENGTH) * (MASS / LENGTH * HEIGHT);
+        return 4.0/3.0 * HEIGHT_METERS * LENGTH_METERS * (HEIGHT_METERS*HEIGHT_METERS + LENGTH_METERS*LENGTH_METERS) * (MASS / LENGTH_METERS * HEIGHT_METERS);
     }
 
     public void setDx(double dx) {
@@ -97,19 +103,28 @@ public class Truck implements Car{
         return (circumfence / rVel.getVelocity()) * 2 * Math.PI;
     }
 
-    public void spin(double rads) {
-        ArrayList<Point> points = getCarShapePoints();
+    public void spinAllParts(double rads) {
+        spin(rads, getCarShapePoints(), carShape);
+        spin(rads, getLMirrorPoints(), lMirror);
+        spin(rads, getRMirrorPoints(), rMirror);
+        spin(rads, getWindPoints(), windShield);
+    }
+
+    public void spin(double rads, ArrayList<Point> points, Path shape) {
+        ArrayList<Point> rotatedPoints = new ArrayList<>();
         for (Point point : points) {
-            point.rotate(rads + orientation, centerOfMass);
+            rotatedPoints.add(point.rotate(rads + orientation, centerOfMass));
         }
+        orientation += rads;
+        shape.setVertices(rotatedPoints);
     }
 
     public void buildGraphics() {
         carShape = new Path(getCarShapePoints());
-        Path windShield = new Path(getWindPoints());
-        Path rMirror = new Path(getRMirrorPoints());
-        Path lMirror = new Path(getLMirrorPoints());
-        Path bed = new Path(getTruckBedPoints());
+        windShield = new Path(getWindPoints());
+        rMirror = new Path(getRMirrorPoints());
+        lMirror = new Path(getLMirrorPoints());
+        bed = new Path(getTruckBedPoints());
         group.add(bed);
         group.add(rMirror);
         group.add(lMirror);

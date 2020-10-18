@@ -3,10 +3,13 @@ package CarCrashsim;
 import java.util.ArrayList;
 
 import edu.macalester.graphics.GraphicsGroup;
+import edu.macalester.graphics.Path;
 import edu.macalester.graphics.Point;
 
 public interface Car {
-    public void spin(double rad);
+    public void spin(double rad, ArrayList<Point> points, Path shape);
+
+    public void spinAllParts(double rads);
 
     public double rVelToRadians();
 
