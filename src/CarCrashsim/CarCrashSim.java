@@ -28,7 +28,7 @@ public class CarCrashSim {
         // carList.add(testSedan);
         // carList.add(testTruck);
 
-        testCar.setRVelocity(new Vector(0, 10));;
+        testCar.setRVelocity(new Vector(0, 2));;
         
         collisionM.addCars(carList);
         carM.addCars(carList);
