@@ -9,6 +9,8 @@ import edu.macalester.graphics.Point;
 public interface Car {
     public void spin(double rad, ArrayList<Point> points, Path shape);
 
+    public ArrayList<Point> spinPoints(double rad, ArrayList<Point> points);
+
     public void spinAllParts(double rads);
 
     public double rVelToRadians();

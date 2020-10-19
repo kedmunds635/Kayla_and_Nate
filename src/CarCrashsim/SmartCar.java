@@ -3,7 +3,6 @@ package CarCrashsim;
 import java.util.ArrayList;
 
 import edu.macalester.graphics.*;
-import edu.macalester.graphics.Rectangle;
 
 public class SmartCar implements Car{
     private GraphicsGroup group;
@@ -67,7 +66,7 @@ public class SmartCar implements Car{
     }
 
     public Vector getR(Point collide) {
-        return new Vector(collide.getX() - centerOfMass.getX(), collide.getY() - centerOfMass.getY());
+        return new Vector(collide.getX() - (centerOfMass.getX() + group.getX()), collide.getY() - (centerOfMass.getY()) + group.getY());
     }
 
     public Vector getRVel() {
@@ -81,7 +80,6 @@ public class SmartCar implements Car{
     public double rVelToRadians() {
         double dist = Math.sqrt(Math.pow(LENGTH * 0.5, 2) + Math.pow(HEIGHT * 0.5, 2));
         double circumfence = 2 * Math.PI * dist;
-        System.out.println(rVel.getVelocity());
         return (rVel.getVelocity() / circumfence) * 2 * Math.PI;
     }
 
@@ -101,14 +99,23 @@ public class SmartCar implements Car{
         shape.setVertices(rotatedPoints);
     }
 
+    public ArrayList<Point> spinPoints(double rads, ArrayList<Point> points) {
+        ArrayList<Point> rotatedPoints = new ArrayList<>();
+        for (Point point : points) {
+            rotatedPoints.add(point.rotate(rads + orientation, centerOfMass));
+        }
+        return rotatedPoints;
+    }
+
     public boolean checkPointForCollision(Point point) {
         return carShape.testHit(point.getX() - group.getX(), point.getY() - group.getY());
     }
 
     public ArrayList<Point> getPoints() {
         ArrayList<Point> points = getCarShapePoints();
+        ArrayList<Point> rotatedPoints = spinPoints(orientation, points);
         ArrayList<Point> collidePoints = new ArrayList<>();
-        for (Point point : points) {
+        for (Point point : rotatedPoints) {
             collidePoints.add(point.add(group.getPosition()));
         }
         return collidePoints;

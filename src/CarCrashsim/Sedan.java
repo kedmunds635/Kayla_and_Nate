@@ -27,7 +27,7 @@ public class Sedan implements Car{
         group = new GraphicsGroup();
         buildGraphics();
         group.setPosition(x, y);
-        centerOfMass = new Point(x + LENGTH * 0.5, y + HEIGHT * 0.5);
+        centerOfMass = new Point(LENGTH * 0.5, HEIGHT * 0.5);
         rVel = new Vector(0, 0);
     }
 
@@ -64,7 +64,7 @@ public class Sedan implements Car{
     }
 
     public Vector getR(Point collide) {
-        return new Vector(collide.getX() - centerOfMass.getX(), collide.getY() - centerOfMass.getY());
+        return new Vector(collide.getX() - (centerOfMass.getX() + group.getX()), collide.getY() - (centerOfMass.getY() + group.getY()));
     }
 
     public Vector getRVel() {
@@ -78,7 +78,7 @@ public class Sedan implements Car{
     public double rVelToRadians() {
         double dist = Math.sqrt(Math.pow(LENGTH * 0.5, 2) + Math.pow(HEIGHT * 0.5, 2));
         double circumfence = 2 * Math.PI * dist;
-        return (circumfence / rVel.getVelocity()) * 2 * Math.PI;
+        return (rVel.getVelocity() / circumfence) * 2 * Math.PI;
     }
 
     public void spinAllParts(double rads) {
@@ -97,14 +97,23 @@ public class Sedan implements Car{
         shape.setVertices(rotatedPoints);
     }
 
+    public ArrayList<Point> spinPoints(double rads, ArrayList<Point> points) {
+        ArrayList<Point> rotatedPoints = new ArrayList<>();
+        for (Point point : points) {
+            rotatedPoints.add(point.rotate(rads + orientation, centerOfMass));
+        }
+        return rotatedPoints;
+    }
+
     public boolean checkPointForCollision(Point point) {
         return carShape.testHit(point.getX() - group.getX(), point.getY() - group.getY());
     }
 
     public ArrayList<Point> getPoints() {
         ArrayList<Point> points = getCarShapePoints();
+        ArrayList<Point> rotatedPoints = spinPoints(orientation, points);
         ArrayList<Point> collidePoints = new ArrayList<>();
-        for (Point point : points) {
+        for (Point point : rotatedPoints) {
             collidePoints.add(point.add(group.getPosition()));
         }
         return collidePoints;

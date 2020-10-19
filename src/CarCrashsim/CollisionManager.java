@@ -26,9 +26,8 @@ public class CollisionManager {
                     ArrayList<Point> points = car2.getPoints();
                     for (Point point : points) {
                         if (car.checkPointForCollision(point) &&
-                            (!finishedCollisions.contains(List.of(car, car2)) || 
+                            (!finishedCollisions.contains(List.of(car, car2)) && 
                             !finishedCollisions.contains(List.of(car2, car)))) {
-                            System.out.print("collision");
                             handleCollision(car, car2, point);
                             ArrayList<Car> cars = new ArrayList<>();
                             cars.add(car);
@@ -77,6 +76,8 @@ public class CollisionManager {
         Vector vp = (carVel.add(cross(car.getRVel(), car.getR(coll))))
             .subtract(car2Vel.add(cross(car2.getRVel(), car2.getR(coll))));
 
+        System.out.println(car.getR(coll) + " | " + car2.getR(coll));
+        
         double vp_p = vp.dot(n);
 
         Vector rVel = carVel.subtract(car2Vel);

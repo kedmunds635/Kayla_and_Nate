@@ -28,17 +28,9 @@ public class Truck implements Car{
         group = new GraphicsGroup();
         buildGraphics();
         group.setPosition(x, y);
-        centerOfMass = new Point(x + LENGTH * 0.5, y + HEIGHT * 0.5);
+        centerOfMass = new Point(LENGTH * 0.5, HEIGHT * 0.5);
         rVel = new Vector(0, 0);
-    }
-
-    public ArrayList<Point> getPoints() {
-        ArrayList<Point> points = getCarShapePoints();
-        ArrayList<Point> collidePoints = new ArrayList<>();
-        for (Point point : points) {
-            collidePoints.add(point.add(group.getPosition()));
-        }
-        return collidePoints;
+        orientation = 0;
     }
 
     public double getMassOfInertia() {
@@ -61,6 +53,10 @@ public class Truck implements Car{
         return dy;
     }
 
+    public double getMass() {
+        return MASS;
+    }
+
     public double getX() {
         return group.getX();
     }
@@ -69,24 +65,8 @@ public class Truck implements Car{
         return group.getY();
     }
 
-    public double getMass() {
-        return MASS;
-    }
-
-    public boolean checkPointForCollision(Point point) {
-        return carShape.testHit(point.getX() - group.getX(), point.getY() - group.getY());
-    }
-
-    public void move(double dt) {
-        group.moveBy(dt * dx, dt * dy);
-    }
-
-    public GraphicsGroup getGraphics() {
-        return group;
-    }
-
     public Vector getR(Point collide) {
-        return new Vector(collide.getX() - centerOfMass.getX(), collide.getY() - centerOfMass.getY());
+        return new Vector(collide.getX() - (centerOfMass.getX() + group.getX()), collide.getY() - (centerOfMass.getY() + group.getY()));
     }
 
     public Vector getRVel() {
@@ -100,7 +80,7 @@ public class Truck implements Car{
     public double rVelToRadians() {
         double dist = Math.sqrt(Math.pow(LENGTH * 0.5, 2) + Math.pow(HEIGHT * 0.5, 2));
         double circumfence = 2 * Math.PI * dist;
-        return (circumfence / rVel.getVelocity()) * 2 * Math.PI;
+        return (rVel.getVelocity() / circumfence) * 2 * Math.PI;
     }
 
     public void spinAllParts(double rads) {
@@ -108,6 +88,7 @@ public class Truck implements Car{
         spin(rads, getLMirrorPoints(), lMirror);
         spin(rads, getRMirrorPoints(), rMirror);
         spin(rads, getWindPoints(), windShield);
+        spin(rads, getTruckBedPoints(), bed);
     }
 
     public void spin(double rads, ArrayList<Point> points, Path shape) {
@@ -119,17 +100,47 @@ public class Truck implements Car{
         shape.setVertices(rotatedPoints);
     }
 
+    public ArrayList<Point> spinPoints(double rads, ArrayList<Point> points) {
+        ArrayList<Point> rotatedPoints = new ArrayList<>();
+        for (Point point : points) {
+            rotatedPoints.add(point.rotate(rads + orientation, centerOfMass));
+        }
+        return rotatedPoints;
+    }
+
+    public boolean checkPointForCollision(Point point) {
+        return carShape.testHit(point.getX() - group.getX(), point.getY() - group.getY());
+    }
+
+    public ArrayList<Point> getPoints() {
+        ArrayList<Point> points = getCarShapePoints();
+        ArrayList<Point> rotatedPoints = spinPoints(orientation, points);
+        ArrayList<Point> collidePoints = new ArrayList<>();
+        for (Point point : rotatedPoints) {
+            collidePoints.add(point.add(group.getPosition()));
+        }
+        return collidePoints;
+    }
+
+    public void move(double dt) {
+        group.moveBy(dt * dx, dt * dy);
+    }
+
+    public GraphicsGroup getGraphics() {
+        return group;
+    }
+
     public void buildGraphics() {
-        carShape = new Path(getCarShapePoints());
-        windShield = new Path(getWindPoints());
-        rMirror = new Path(getRMirrorPoints());
-        lMirror = new Path(getLMirrorPoints());
-        bed = new Path(getTruckBedPoints());
-        group.add(bed);
+        carShape = new Path(getCarShapePoints(), true);
+        windShield = new Path(getWindPoints(), true);
+        rMirror = new Path(getRMirrorPoints(), true);
+        lMirror = new Path(getLMirrorPoints(), true);
+        bed = new Path(getTruckBedPoints(), true); 
         group.add(rMirror);
         group.add(lMirror);
         group.add(carShape);
         group.add(windShield);
+        group.add(bed);
     }
 
     private ArrayList<Point> getWindPoints() {
@@ -176,4 +187,6 @@ public class Truck implements Car{
         points.add(new Point(LENGTH - 41, 41));
         return points;
     }
+
 }
+
