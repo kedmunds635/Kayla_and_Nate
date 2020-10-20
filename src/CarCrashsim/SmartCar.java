@@ -66,7 +66,7 @@ public class SmartCar implements Car{
     }
 
     public Vector getR(Point collide) {
-        return new Vector(collide.getX() - (centerOfMass.getX() + group.getX()), collide.getY() - (centerOfMass.getY()) + group.getY());
+        return new Vector(collide.getX() - (centerOfMass.getX() + group.getX()), collide.getY() - (centerOfMass.getY() + group.getY()));
     }
 
     public Vector getRVel() {

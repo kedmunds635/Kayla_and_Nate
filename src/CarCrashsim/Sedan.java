@@ -29,6 +29,7 @@ public class Sedan implements Car{
         group.setPosition(x, y);
         centerOfMass = new Point(LENGTH * 0.5, HEIGHT * 0.5);
         rVel = new Vector(0, 0);
+        orientation = 0;
     }
 
     public double getMassOfInertia() {
@@ -43,14 +44,6 @@ public class Sedan implements Car{
         this.dy = dy;
     }
 
-    public double getX() {
-        return group.getX();
-    }
-
-    public double getY() {
-        return group.getY();
-    }
-
     public double getDx() {
         return dx;
     }
@@ -61,6 +54,14 @@ public class Sedan implements Car{
 
     public double getMass() {
         return MASS;
+    }
+
+    public double getX() {
+        return group.getX();
+    }
+
+    public double getY() {
+        return group.getY();
     }
 
     public Vector getR(Point collide) {
@@ -165,7 +166,7 @@ public class Sedan implements Car{
         return points;
     }
 
-        private ArrayList<Point> getCarShapePoints() {
+    private ArrayList<Point> getCarShapePoints() {
         ArrayList<Point> points = new ArrayList<>();
         points.add(new Point(0, 0));
         points.add(new Point(0, HEIGHT));

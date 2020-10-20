@@ -87,8 +87,11 @@ public class CollisionManager {
 
         double al = 1 / car.getMass() + Math.pow(cross(car.getR(coll), n), 2) / car.getMassOfInertia() +
             1 / car2.getMass() + Math.pow(cross(car2.getR(coll), n), 2) / car2.getMassOfInertia();
-        double j = vp_p * -1.1 / (al);
+        double j = vp_p * -1 / (al);
         Vector jn = n.multiply(j);
+
+        System.out.println(car.getRVel().add(cross(car.getR(coll), jn) /car.getMassOfInertia()));
+        System.out.println(car2.getRVel().add(cross(car2.getR(coll), jn) /car2.getMassOfInertia()));
 
         car.setRVelocity(car.getRVel().add(cross(car.getR(coll), jn) /car.getMassOfInertia()));
         car2.setRVelocity(car2.getRVel().add(cross(car2.getR(coll), jn) /car2.getMassOfInertia()));
