@@ -20,6 +20,7 @@ public class CollisionManager {
 
     public void checkForCollisions() {
         ArrayList<ArrayList<Car>> finishedCollisions = new ArrayList<>();
+        ArrayList<Point> pointsOfCollision = new ArrayList<>();
         for (Car car : carList) {
             for (Car car2 : carList) {
                 if (car2 != car) {
@@ -28,8 +29,9 @@ public class CollisionManager {
                         if (car.checkPointForCollision(point) &&
                             (!finishedCollisions.contains(List.of(car, car2)) && 
                             !finishedCollisions.contains(List.of(car2, car)))) {
-                            handleCollision(car, car2, point);
+                            pointsOfCollision.add(point);
                             ArrayList<Car> cars = new ArrayList<>();
+                            handleCollision(car, car2, point);
                             cars.add(car);
                             cars.add(car2);
                             finishedCollisions.add(cars);
@@ -38,6 +40,16 @@ public class CollisionManager {
                 }
             }
         }
+    }
+
+    private Point getAveragePoint(ArrayList<Point> points) {
+        double xTotal = 0;
+        double yTotal = 0;
+        for (Point point : points) {
+            xTotal += point.getX();
+            yTotal += point.getY();
+        }
+        return new Point(xTotal / points.size(), yTotal / points.size());
     }
 
     private void handleCollision(Car car, Car car2, Point coll) {
@@ -68,20 +80,22 @@ public class CollisionManager {
         return finalYMomentum / (car.getMass() + car2.getMass());
     }
 
+  
+    // Adapted from https://stackoverflow.com/questions/11654990/2d-physics-engine-collision-response-rotation-of-objects
     private void calculateRotationalV(Car car, Car car2, Point coll) {
         Vector carVel = new Vector(car.getDx(), car.getDy());
         Vector car2Vel = new Vector(car2.getDx(), car2.getDy());
         Vector n = getNormal(car, car2);
 
-        Vector vp = (carVel.add(cross(car.getRVel(), car.getR(coll))))
-            .subtract(car2Vel.add(cross(car2.getRVel(), car2.getR(coll))));
+        Vector vp = carVel.addVector(crossScalar(car.getR(coll), car.getRVel()))
+            .subtract(car2Vel)
+            .subtract(crossScalar(car2.getR(coll), car2.getRVel()));
 
         System.out.println(car.getR(coll) + " | " + car2.getR(coll));
         
         double vp_p = vp.dot(n);
 
-        Vector rVel = carVel.subtract(car2Vel);
-        if (!carsApproching(rVel, car, car2)) {
+        if (vp_p >= 0) {
             return;
         }
 
@@ -90,11 +104,16 @@ public class CollisionManager {
         double j = vp_p * -1 / (al);
         Vector jn = n.multiply(j);
 
-        System.out.println(car.getRVel().add(cross(car.getR(coll), jn) /car.getMassOfInertia()));
-        System.out.println(car2.getRVel().add(cross(car2.getR(coll), jn) /car2.getMassOfInertia()));
+        System.out.println(car.getRVel());
+        System.out.println(cross(car.getR(coll), jn));
+        System.out.println(car.getMassOfInertia());
 
-        car.setRVelocity(car.getRVel().add(cross(car.getR(coll), jn) /car.getMassOfInertia()));
-        car2.setRVelocity(car2.getRVel().add(cross(car2.getR(coll), jn) /car2.getMassOfInertia()));
+        System.out.println(car2.getRVel());
+        System.out.println(cross(car2.getR(coll), jn));
+        System.out.println(car2.getMassOfInertia());
+
+        car.setRVelocity(car.getRVel() + (cross(car.getR(coll), jn) /car.getMassOfInertia()));
+        car2.setRVelocity(car2.getRVel() - (cross(car2.getR(coll), jn) /car2.getMassOfInertia()));
     }
 
     private Vector getNormal(Car car, Car car2) {
@@ -107,6 +126,10 @@ public class CollisionManager {
     private double cross(Vector v1, Vector v2) {
         return v1.getDx() * v2.getDy() - v1.getDy() * v2.getDx();
         
+    }
+
+    private Vector crossScalar(Vector v, double num) {
+        return new Vector(-num * v.getDy(), num * v.getDx());
     }
 
     private boolean carsApproching(Vector r, Car car, Car car2) {

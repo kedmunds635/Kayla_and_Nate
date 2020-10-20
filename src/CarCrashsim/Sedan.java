@@ -8,7 +8,7 @@ public class Sedan implements Car{
     private double dx;
     private double dy;
     private Path carShape;
-    private Vector rVel;
+    private double rVel;
     private Point centerOfMass;
     private double orientation;
     private Path lMirror;
@@ -28,7 +28,7 @@ public class Sedan implements Car{
         buildGraphics();
         group.setPosition(x, y);
         centerOfMass = new Point(LENGTH * 0.5, HEIGHT * 0.5);
-        rVel = new Vector(0, 0);
+        rVel = 0;
         orientation = 0;
     }
 
@@ -68,18 +68,18 @@ public class Sedan implements Car{
         return new Vector(collide.getX() - (centerOfMass.getX() + group.getX()), collide.getY() - (centerOfMass.getY() + group.getY()));
     }
 
-    public Vector getRVel() {
+    public double getRVel() {
         return rVel;
     }
 
-    public void setRVelocity(Vector vel) {
+    public void setRVelocity(double vel) {
         rVel = vel;
     }
 
     public double rVelToRadians() {
         double dist = Math.sqrt(Math.pow(LENGTH * 0.5, 2) + Math.pow(HEIGHT * 0.5, 2));
         double circumfence = 2 * Math.PI * dist;
-        return (rVel.getVelocity() / circumfence) * 2 * Math.PI;
+        return -(rVel / circumfence) * 2 * Math.PI;
     }
 
     public void spinAllParts(double rads) {
@@ -107,8 +107,13 @@ public class Sedan implements Car{
     }
 
     public boolean checkPointForCollision(Point point) {
+        if (rVel != 0) {
+            System.out.println("K");
+        }
         return carShape.testHit(point.getX() - group.getX(), point.getY() - group.getY());
     }
+
+    //testhit sides?
 
     public ArrayList<Point> getPoints() {
         ArrayList<Point> points = getCarShapePoints();

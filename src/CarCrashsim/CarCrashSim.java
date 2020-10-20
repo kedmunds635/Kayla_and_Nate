@@ -11,7 +11,7 @@ public class CarCrashSim {
 
     private static final int CANVAS_WIDTH = 800;
     private static final int CANVAS_HEIGHT = 800;
-    private static final double TIME_INCERMENT = 0.03;
+    private static final double TIME_INCERMENT = 0.3;
 
     public CarCrashSim() {
         canvas  = new CanvasWindow("Car Crash Simulator 2020", CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -20,18 +20,18 @@ public class CarCrashSim {
 
         ArrayList<Car> carList = new ArrayList<>();
 
-        // SmartCar testCar2 = new SmartCar(-50, 0, 700, 600); 
-        // SmartCar testCar3 = new SmartCar(0, 0, 300, 600); 
-        // carList.add(testCar2);
+        SmartCar testCar2 = new SmartCar(-50, -25, 700, 720); 
+        // SmartCar testCar3 = new SmartCar(0, 0, 400, 600); 
+        carList.add(testCar2);
         // carList.add(testCar3);
-        // canvas.add(testCar2.getGraphics());
+        canvas.add(testCar2.getGraphics());
         // canvas.add(testCar3.getGraphics());
 
-        Sedan testSedan = new Sedan(20, 0, 400, 400);
-        Sedan testSedan2 = new Sedan(20, 20, 400, 100);
-        carList.add(testSedan);
+        // Sedan testSedan = new Sedan(20, 0, 400, 400);
+        Sedan testSedan2 = new Sedan(0, 0, 400, 600);
+        // carList.add(testSedan);
         carList.add(testSedan2);
-        canvas.add(testSedan.getGraphics());
+        // canvas.add(testSedan.getGraphics());
         canvas.add(testSedan2.getGraphics());
 
         // Truck testCar = new Truck(0, 0, 100, 400);

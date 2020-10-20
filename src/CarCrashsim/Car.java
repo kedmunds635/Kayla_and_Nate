@@ -15,11 +15,11 @@ public interface Car {
 
     public double rVelToRadians();
 
-    public void setRVelocity(Vector vel);
+    public void setRVelocity(double vel);
 
     public Vector getR(Point collide);
 
-    public Vector getRVel();
+    public double getRVel();
 
     public double getMassOfInertia();
 

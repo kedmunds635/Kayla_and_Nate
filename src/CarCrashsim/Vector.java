@@ -1,8 +1,8 @@
 package CarCrashsim;
 
 public class Vector {
-    private double dx;
-    private double dy;
+    private final double dx;
+    private final double dy;
 
     public Vector(double dx, double dy) {
         this.dx = dx;
@@ -18,6 +18,22 @@ public class Vector {
     }
 
     public double getVelocity () {
+        // if (dx < 0){
+        //     if (dy < 0) {
+
+        //     }
+        //     else {
+
+        //     }
+        // }
+        // else {
+        //     if(dy < 0) {
+        //         return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+        //     }
+        //     else {
+        //         return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+        //     }
+        // }
         return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
     }
 
