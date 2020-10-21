@@ -3,13 +3,17 @@ package CarCrashsim;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.macalester.graphics.CanvasWindow;
+import edu.macalester.graphics.Ellipse;
 import edu.macalester.graphics.Point;
 
 public class CollisionManager {
     private ArrayList<Car> carList;
+    private CanvasWindow canvas;
 
-    public CollisionManager() {
+    public CollisionManager(CanvasWindow canvas) {
         carList = new ArrayList<Car>();
+        this.canvas = canvas;
     }
 
     public void addCars(ArrayList<Car> cars) {
@@ -26,12 +30,14 @@ public class CollisionManager {
                 if (car2 != car) {
                     ArrayList<Point> points = car2.getPoints();
                     for (Point point : points) {
+                        canvas.add(new Ellipse(point.getX(), point.getY(), .2, .2));
                         if (car.checkPointForCollision(point) &&
                             (!finishedCollisions.contains(List.of(car, car2)) && 
                             !finishedCollisions.contains(List.of(car2, car)))) {
                             pointsOfCollision.add(point);
                             ArrayList<Car> cars = new ArrayList<>();
                             handleCollision(car, car2, point);
+                            System.out.println("collide");
                             cars.add(car);
                             cars.add(car2);
                             finishedCollisions.add(cars);
@@ -42,25 +48,42 @@ public class CollisionManager {
         }
     }
 
-    private Point getAveragePoint(ArrayList<Point> points) {
-        double xTotal = 0;
-        double yTotal = 0;
-        for (Point point : points) {
-            xTotal += point.getX();
-            yTotal += point.getY();
-        }
-        return new Point(xTotal / points.size(), yTotal / points.size());
-    }
-
     private void handleCollision(Car car, Car car2, Point coll) {
         calculateRotationalV(car, car2, coll);
 
         double finalDx = calculateFinalDx(car, car2);
+        // double finalDx1 = finalDx;
+        // double finalDx2 = finalDx;
+
+        // if (left(car, car2)) {
+        //     finalDx1 -= 100;
+        //     finalDx2 += 100;
+        // }
+        // else {
+        //     finalDx1 += 100;
+        //     finalDx2 -= 100;
+        // }
+        // System.out.println("X");
+        // System.out.println(finalDx1);
+        // System.out.println(finalDx2);
 
         car.setDx(finalDx);
         car2.setDx(finalDx);
 
         double finalDy = calculateFinalDy(car, car2);
+        // double finalDy1 = finalDy;
+        // double finalDy2 = finalDy;
+        // if (above(car, car2)) {
+        //     finalDy1 -= 100;
+        //     finalDy2 += 100;
+        // }
+        // else {
+        //     finalDy1 += 100;
+        //     finalDy2 -= 100;
+        // }
+        // System.out.println("Y");
+        // System.out.println(finalDy1);
+        // System.out.println(finalDy2);
 
         car.setDy(finalDy);
         car2.setDy(finalDy);
@@ -80,6 +103,22 @@ public class CollisionManager {
         return finalYMomentum / (car.getMass() + car2.getMass());
     }
 
+    private boolean above(Car car, Car car2) {
+        return car.getCenterOfMass().getY() < car2.getCenterOfMass().getY();
+    }
+
+    private boolean below(Car car, Car car2) {
+        return car.getCenterOfMass().getY() > car2.getCenterOfMass().getY();
+    }
+
+    private boolean left(Car car, Car car2) {
+        return car.getCenterOfMass().getX() < car2.getCenterOfMass().getX();
+    }
+
+    private boolean right(Car car, Car car2) {
+        return car.getCenterOfMass().getX() > car2.getCenterOfMass().getX();
+    }
+
   
     // Adapted from https://stackoverflow.com/questions/11654990/2d-physics-engine-collision-response-rotation-of-objects
     private void calculateRotationalV(Car car, Car car2, Point coll) {
@@ -90,8 +129,6 @@ public class CollisionManager {
         Vector vp = carVel.addVector(crossScalar(car.getR(coll), car.getRVel()))
             .subtract(car2Vel)
             .subtract(crossScalar(car2.getR(coll), car2.getRVel()));
-
-        System.out.println(car.getR(coll) + " | " + car2.getR(coll));
         
         double vp_p = vp.dot(n);
 
@@ -101,16 +138,8 @@ public class CollisionManager {
 
         double al = 1 / car.getMass() + Math.pow(cross(car.getR(coll), n), 2) / car.getMassOfInertia() +
             1 / car2.getMass() + Math.pow(cross(car2.getR(coll), n), 2) / car2.getMassOfInertia();
-        double j = vp_p * -1 / (al);
+        double j = vp_p * -1 / (al);    
         Vector jn = n.multiply(j);
-
-        System.out.println(car.getRVel());
-        System.out.println(cross(car.getR(coll), jn));
-        System.out.println(car.getMassOfInertia());
-
-        System.out.println(car2.getRVel());
-        System.out.println(cross(car2.getR(coll), jn));
-        System.out.println(car2.getMassOfInertia());
 
         car.setRVelocity(car.getRVel() + (cross(car.getR(coll), jn) /car.getMassOfInertia()));
         car2.setRVelocity(car2.getRVel() - (cross(car2.getR(coll), jn) /car2.getMassOfInertia()));

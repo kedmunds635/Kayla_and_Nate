@@ -18,7 +18,7 @@ public class CarManager {
     public void moveAllCars(double dt) {
         for (Car car : carList) {
             car.move(dt);
-            car.spinAllParts(car.rVelToRadians());
+            car.spinAllParts(dt);
         }
     }
 }

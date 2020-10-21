@@ -32,6 +32,10 @@ public class Sedan implements Car{
         orientation = 0;
     }
 
+    public Point getCenterOfMass() {
+        return centerOfMass;
+    }
+
     public double getMassOfInertia() {
         return 4.0/3.0 * HEIGHT_METERS * LENGTH_METERS * (HEIGHT_METERS*HEIGHT_METERS + LENGTH_METERS*LENGTH_METERS) * (MASS / LENGTH_METERS * HEIGHT_METERS);
     }
@@ -82,11 +86,11 @@ public class Sedan implements Car{
         return -(rVel / circumfence) * 2 * Math.PI;
     }
 
-    public void spinAllParts(double rads) {
-        spin(rads, getCarShapePoints(), carShape);
-        spin(rads, getLMirrorPoints(), lMirror);
-        spin(rads, getRMirrorPoints(), rMirror);
-        spin(rads, getWindPoints(), windShield);
+    public void spinAllParts(double dt) {
+        spin(rVel * dt, getCarShapePoints(), carShape);
+        spin(rVel * dt, getLMirrorPoints(), lMirror);
+        spin(rVel * dt, getRMirrorPoints(), rMirror);
+        spin(rVel * dt, getWindPoints(), windShield);
     }
 
     public void spin(double rads, ArrayList<Point> points, Path shape) {
@@ -101,15 +105,12 @@ public class Sedan implements Car{
     public ArrayList<Point> spinPoints(double rads, ArrayList<Point> points) {
         ArrayList<Point> rotatedPoints = new ArrayList<>();
         for (Point point : points) {
-            rotatedPoints.add(point.rotate(rads + orientation, centerOfMass));
+            rotatedPoints.add(point.rotate(rads, centerOfMass));
         }
         return rotatedPoints;
     }
 
     public boolean checkPointForCollision(Point point) {
-        if (rVel != 0) {
-            System.out.println("K");
-        }
         return carShape.testHit(point.getX() - group.getX(), point.getY() - group.getY());
     }
 

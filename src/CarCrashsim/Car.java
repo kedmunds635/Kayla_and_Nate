@@ -7,11 +7,13 @@ import edu.macalester.graphics.Path;
 import edu.macalester.graphics.Point;
 
 public interface Car {
+    public Point getCenterOfMass();
+
     public void spin(double rad, ArrayList<Point> points, Path shape);
 
     public ArrayList<Point> spinPoints(double rad, ArrayList<Point> points);
 
-    public void spinAllParts(double rads);
+    public void spinAllParts(double dt);
 
     public double rVelToRadians();
 
