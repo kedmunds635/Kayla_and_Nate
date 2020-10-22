@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Random;
 
 import edu.macalester.graphics.CanvasWindow;
+import edu.macalester.graphics.ui.Button;
 
 public class CarCrashSim {
     private CanvasWindow canvas;
@@ -24,6 +25,10 @@ public class CarCrashSim {
         collisionM =  new CollisionManager(canvas);
 
         ArrayList<Car> carList = new ArrayList<>();
+
+        Button resetButton  = createResetButton();
+
+        resetButton.onClick(() -> this.reset());
 
         // SmartCar testCar2 = new SmartCar(0, 120, 420, 200); 
         // SmartCar testCar3 = new SmartCar(0, 0, 400, 600); 
@@ -46,26 +51,62 @@ public class CarCrashSim {
         // canvas.add(testCar.getGraphics());
         // canvas.add(testTruck.getGraphics());
 
-        List<Double> pos = getRandPos(List.of(0.0));
-
-        Car car = generateCar(pos.get(0), pos.get(1), pos.get(2), pos.get(3));
-        carList.add(car);
-        canvas.add(car.getGraphics());
-
-        List<Double> pos2 = getRandPos(pos);
-
-        Car car2 = generateCar(pos2.get(0), pos2.get(1), pos2.get(2), pos2.get(3));
-        carList.add(car2);
-        canvas.add(car2.getGraphics());
-        
-        collisionM.addCars(carList);
-        carM.addCars(carList);
+        reset();
 
         canvas.animate(() -> {
             collisionM.checkForCollisions();
             carM.moveAllCars(TIME_INCERMENT);
             return;
         });
+    }
+
+    private Button createResetButton() {
+        Button button = new Button("Reset");
+        button.setPosition(50, 50);
+        canvas.add(button);
+        return button;
+    }
+
+    private void clear() {
+        canvas.removeAll();
+        carM.Reset();
+        collisionM.Reset();
+        Button resetButton  = createResetButton();
+        resetButton.onClick(() -> this.reset());
+    }
+
+    private void reset() {
+        clear();
+
+        ArrayList<Car> carList = new ArrayList<Car>();
+
+        List<Double> pos = getRandPos(List.of(0.0));
+
+        ArrayList<Double> randPos = randomizeStart(pos);
+
+        Car car = generateCar(randPos.get(0), randPos.get(1), randPos.get(2), randPos.get(3));
+        carList.add(car);
+        canvas.add(car.getGraphics());
+
+        List<Double> pos2 = getRandPos(pos);
+
+        ArrayList<Double> randPos2 = randomizeStart(pos2);
+
+        Car car2 = generateCar(randPos2.get(0), randPos2.get(1), randPos2.get(2), randPos2.get(3));
+        carList.add(car2);
+        canvas.add(car2.getGraphics());
+        
+        collisionM.addCars(carList);
+        carM.addCars(carList);
+    }
+
+    private ArrayList<Double> randomizeStart(List<Double> list) {
+        ArrayList<Double> randList = new ArrayList<>();
+        for (Double num : list) {
+            num *= (1 + (rand.nextDouble() - 0.5) * 0.2);
+            randList.add(num);
+        }
+        return randList;
     }
 
     private List<Double> getRandPos(List<Double> repeat) {

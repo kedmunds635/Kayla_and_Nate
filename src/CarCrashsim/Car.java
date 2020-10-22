@@ -7,6 +7,8 @@ import edu.macalester.graphics.Path;
 import edu.macalester.graphics.Point;
 
 public interface Car {
+    public void applyFriction(double dt);
+
     public Point getCenterOfMass();
 
     public void spin(double rad, ArrayList<Point> points, Path shape);

@@ -16,6 +16,10 @@ public class CollisionManager {
         this.canvas = canvas;
     }
 
+    public void Reset() {
+        carList.clear();
+    }
+
     public void addCars(ArrayList<Car> cars) {
         for (Car car : cars) {
             carList.add(car);
@@ -30,14 +34,13 @@ public class CollisionManager {
                 if (car2 != car) {
                     ArrayList<Point> points = car2.getPoints();
                     for (Point point : points) {
-                        canvas.add(new Ellipse(point.getX(), point.getY(), .2, .2));
+                        canvas.add(new Ellipse(point.getX(), point.getY(), .1, .1));
                         if (car.checkPointForCollision(point) &&
                             (!finishedCollisions.contains(List.of(car, car2)) && 
                             !finishedCollisions.contains(List.of(car2, car)))) {
                             pointsOfCollision.add(point);
                             ArrayList<Car> cars = new ArrayList<>();
                             handleCollision(car, car2, point);
-                            System.out.println("collide");
                             cars.add(car);
                             cars.add(car2);
                             finishedCollisions.add(cars);
@@ -52,38 +55,11 @@ public class CollisionManager {
         calculateRotationalV(car, car2, coll);
 
         double finalDx = calculateFinalDx(car, car2);
-        // double finalDx1 = finalDx;
-        // double finalDx2 = finalDx;
-
-        // if (left(car, car2)) {
-        //     finalDx1 -= 100;
-        //     finalDx2 += 100;
-        // }
-        // else {
-        //     finalDx1 += 100;
-        //     finalDx2 -= 100;
-        // }
-        // System.out.println("X");
-        // System.out.println(finalDx1);
-        // System.out.println(finalDx2);
 
         car.setDx(finalDx);
         car2.setDx(finalDx);
 
         double finalDy = calculateFinalDy(car, car2);
-        // double finalDy1 = finalDy;
-        // double finalDy2 = finalDy;
-        // if (above(car, car2)) {
-        //     finalDy1 -= 100;
-        //     finalDy2 += 100;
-        // }
-        // else {
-        //     finalDy1 += 100;
-        //     finalDy2 -= 100;
-        // }
-        // System.out.println("Y");
-        // System.out.println(finalDy1);
-        // System.out.println(finalDy2);
 
         car.setDy(finalDy);
         car2.setDy(finalDy);
@@ -102,23 +78,6 @@ public class CollisionManager {
         double finalYMomentum = yMomentum1 + yMomentum2;
         return finalYMomentum / (car.getMass() + car2.getMass());
     }
-
-    private boolean above(Car car, Car car2) {
-        return car.getCenterOfMass().getY() < car2.getCenterOfMass().getY();
-    }
-
-    private boolean below(Car car, Car car2) {
-        return car.getCenterOfMass().getY() > car2.getCenterOfMass().getY();
-    }
-
-    private boolean left(Car car, Car car2) {
-        return car.getCenterOfMass().getX() < car2.getCenterOfMass().getX();
-    }
-
-    private boolean right(Car car, Car car2) {
-        return car.getCenterOfMass().getX() > car2.getCenterOfMass().getX();
-    }
-
   
     // Adapted from https://stackoverflow.com/questions/11654990/2d-physics-engine-collision-response-rotation-of-objects
     private void calculateRotationalV(Car car, Car car2, Point coll) {
@@ -138,7 +97,7 @@ public class CollisionManager {
 
         double al = 1 / car.getMass() + Math.pow(cross(car.getR(coll), n), 2) / car.getMassOfInertia() +
             1 / car2.getMass() + Math.pow(cross(car2.getR(coll), n), 2) / car2.getMassOfInertia();
-        double j = vp_p * -1 / (al);    
+        double j = vp_p * -2 / (al);    
         Vector jn = n.multiply(j);
 
         car.setRVelocity(car.getRVel() + (cross(car.getR(coll), jn) /car.getMassOfInertia()));
@@ -159,22 +118,6 @@ public class CollisionManager {
 
     private Vector crossScalar(Vector v, double num) {
         return new Vector(-num * v.getDy(), num * v.getDx());
-    }
-
-    private boolean carsApproching(Vector r, Car car, Car car2) {
-        if (r.getDx() > 0 || car2.getX() < car.getX()) {
-            return true;
-        }
-        if (r.getDy() > 0 || car2.getY() < car.getY()) {
-            return true;
-        }
-        if (r.getDx() < 0 || car2.getX() > car.getX()) {
-            return true;
-        }
-        if (r.getDy() < 0 || car2.getY() > car.getY()) {
-            return true;
-        }
-        return false;
     }
 
 // var vp = a.vel + cross(a.r_vel, a.r) - b.vel - cross(b.r_vel, b.r);

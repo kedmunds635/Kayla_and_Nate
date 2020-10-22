@@ -9,6 +9,10 @@ public class CarManager {
         carList = new ArrayList<Car>();
     }
 
+    public void Reset() {
+        carList.clear();
+    }
+
     public void addCars(ArrayList<Car> cars) {
         for (Car car : cars) {
             carList.add(car);
@@ -19,6 +23,7 @@ public class CarManager {
         for (Car car : carList) {
             car.move(dt);
             car.spinAllParts(dt);
+            car.applyFriction(dt);
         }
     }
 }

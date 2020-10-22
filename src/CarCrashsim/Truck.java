@@ -33,6 +33,12 @@ public class Truck implements Car{
         orientation = 0;
     }
 
+    public void applyFriction(double dt) {
+        dx *= 1 - (0.05 * dt);
+        dy *= 1 - (0.05 * dt);
+        rVel *= 1 - (0.05 * dt);
+    }
+
     public Point getCenterOfMass() {
         return centerOfMass;
     }
