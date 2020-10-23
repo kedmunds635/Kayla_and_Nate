@@ -13,51 +13,42 @@ public class CarCrashSim {
     private CanvasWindow canvas;
     private CarManager carM;
     private CollisionManager collisionM;
+    private double timeIncrement;
+    private int timeIndex;
 
+    private static final double[] TIME_OPTIONS = {0.1, 0.05, 0.02, 0.01};
     private static final int CANVAS_WIDTH = 800;
     private static final int CANVAS_HEIGHT = 800;
-    private static final double TIME_INCERMENT = 0.04;
     private static final Random rand = new Random();
 
     public CarCrashSim() {
         canvas  = new CanvasWindow("Car Crash Simulator 2020", CANVAS_WIDTH, CANVAS_HEIGHT);
         carM = new CarManager();
         collisionM =  new CollisionManager(canvas);
+        timeIncrement = TIME_OPTIONS[1];
 
-        ArrayList<Car> carList = new ArrayList<>();
+        Button resetButton = createResetButton();
 
-        Button resetButton  = createResetButton();
+        Button incrementButton = createIncButton();
 
-        resetButton.onClick(() -> this.reset());
+        resetButton.onClick(() -> reset());
 
-        // SmartCar testCar2 = new SmartCar(0, 120, 420, 200); 
-        // SmartCar testCar3 = new SmartCar(0, 0, 400, 600); 
-        // carList.add(testCar2);
-        // carList.add(testCar3);
-        // canvas.add(testCar2.getGraphics());
-        // canvas.add(testCar3.getGraphics());
-
-        // Sedan testSedan = new Sedan(20, 0, 400, 400);
-        // Sedan testSedan2 = new Sedan(0, 0, 400, 600);
-        // carList.add(testSedan);
-        // carList.add(testSedan2);
-        // canvas.add(testSedan.getGraphics());
-        // canvas.add(testSedan2.getGraphics());
-
-        // Truck testCar = new Truck(400, 0, 100, 400);
-        // Truck testTruck = new Truck(-20, 0, 600, 400);
-        // carList.add(testCar);
-        // carList.add(testTruck);
-        // canvas.add(testCar.getGraphics());
-        // canvas.add(testTruck.getGraphics());
+        incrementButton.onClick(() -> changeTimeIncrement());
 
         reset();
 
         canvas.animate(() -> {
             collisionM.checkForCollisions();
-            carM.moveAllCars(TIME_INCERMENT);
+            carM.moveAllCars(timeIncrement);
             return;
         });
+    }
+
+    private Button createIncButton() {
+        Button button = new Button("Change time increment");
+        button.setPosition(50, 85);
+        canvas.add(button);
+        return button;
     }
 
     private Button createResetButton() {
@@ -67,12 +58,20 @@ public class CarCrashSim {
         return button;
     }
 
+    private void changeTimeIncrement() {
+        timeIndex += 1;
+        timeIndex = timeIndex % 4;
+        timeIncrement = TIME_OPTIONS[timeIndex];
+    }
+
     private void clear() {
         canvas.removeAll();
         carM.Reset();
         collisionM.Reset();
         Button resetButton  = createResetButton();
-        resetButton.onClick(() -> this.reset());
+        resetButton.onClick(() -> reset());
+        Button incremenButton  = createIncButton();
+        incremenButton.onClick(() -> changeTimeIncrement());
     }
 
     private void reset() {
@@ -118,10 +117,18 @@ public class CarCrashSim {
             positions.add("Right far");
             positions.add("Top far");
             positions.add("Bottom far");
+            positions.add("Top left");
+            positions.add("Top right");
+            positions.add("Bottom left");
+            positions.add("Bottom right");
             xVals.put("Left far", List.of(100.0, 400.0, 30.0, 0.0));
             xVals.put("Right far", List.of(700.0, 400.0, -30.0, 0.0));
             xVals.put("Top far", List.of(400.0, 100.0, 0.0, 30.0));
             xVals.put("Bottom far", List.of(400.0, 700.0, 0.0, -30.0));
+            xVals.put("Top left", List.of(100.0, 100.0, 30.0 * 1.2, 30.0 * 1.2));
+            xVals.put("Top right", List.of(700.0, 100.0, -30.0 * 1.2, 30.0 * 1.2));
+            xVals.put("Bottom left", List.of(100.0, 700.0, 30.0 * 1.2, -30.0 * 1.2));
+            xVals.put("Bottom right", List.of(700.0, 700.0, -30.0 * 1.2, -30.0 * 1.2));
             toReturn = xVals.get(positions.get(rand.nextInt(positions.size())));
         }
         return toReturn;
